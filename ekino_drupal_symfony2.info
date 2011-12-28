@@ -1,0 +1,5 @@
+name = Ekino Drupal Symfony2
+description = Bridge between Symfony2 and Drupal 7.x
+package = Symfony2
+core = 7.x
+files[] = ekino_drupal_symfony2.module

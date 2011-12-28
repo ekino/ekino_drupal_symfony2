@@ -1,0 +1,71 @@
+<?php
+
+/*
+ * This file is part of the Ekino Drupal package.
+ *
+ * (c) 2011 Ekino
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+if (PHP_SAPI === 'cli') {
+    ekino_drupal_symfony_start('drush');
+}
+
+/**
+ * @param string $mode
+ * @return void
+ */
+function ekino_drupal_symfony_start($mode)
+{
+    global $container, $conf;
+
+    if (!$container && PHP_SAPI === 'cli' && $mode == 'drush') {
+        require_once sprintf('%s/%s/bootstrap.php.cache', $conf['symfony2']['root'], 'app');
+        require_once sprintf('%s/%s/AppKernel.php', $conf['symfony2']['root'], 'app');
+
+        $content = ob_get_flush();
+        echo "[Symfony2] Booting Kernel ";
+        $kernel = new AppKernel($conf['symfony2'][$mode]['env'], $conf['symfony2'][$mode]['debug']);
+        $kernel->loadClassCache();
+        $kernel->boot();
+
+        echo " ... ok! \n";
+
+        echo "[Symfony2] Loading container ";
+        $container = $kernel->getContainer();
+
+        echo " ... ok! \n";
+
+        ob_start();
+        echo $content;
+    }
+}
+
+/**
+ * @return \Symfony\Component\DependencyInjection\ContainerInterface
+ */
+function symfony_container()
+{
+    global $container;
+
+    if (!$container) {
+        throw new RuntimeException('No symfony container available');
+    }
+
+    return $container;
+}
+
+/**
+ * @param $name
+ * @return object
+ */
+function symfony_service($name)
+{
+    return symfony_container()->get($name);
+}
+
+require_once __DIR__.'/ekino_drupal_symfony2_event.inc';
+require_once __DIR__.'/ekino_drupal_symfony2_user_hook.inc';
+require_once __DIR__.'/ekino_drupal_symfony2_schema.inc';
