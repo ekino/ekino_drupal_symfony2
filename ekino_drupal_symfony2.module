@@ -1,3 +1,4 @@
+
 <?php
 
 /*
@@ -19,24 +20,30 @@ if (PHP_SAPI === 'cli') {
  */
 function ekino_drupal_symfony_start($mode)
 {
-    global $container, $conf;
+    global $container, $conf, $kernel;
 
     if (!$container && PHP_SAPI === 'cli' && $mode == 'drush') {
         require_once sprintf('%s/%s/bootstrap.php.cache', $conf['symfony2']['root'], 'app');
         require_once sprintf('%s/%s/AppKernel.php', $conf['symfony2']['root'], 'app');
 
-        $content = ob_get_flush();
         echo "[Symfony2] Booting Kernel ";
-        $kernel = new AppKernel($conf['symfony2'][$mode]['env'], $conf['symfony2'][$mode]['debug']);
-        $kernel->loadClassCache();
-        $kernel->boot();
 
-        echo " ... ok! \n";
+        if (!$kernel instanceof AppKernel) {
+          $content = ob_get_flush();
+          $kernel = new AppKernel($conf['symfony2'][$mode]['env'], $conf['symfony2'][$mode]['debug']);
+          $kernel->loadClassCache();
+          $kernel->boot();
 
-        echo "[Symfony2] Loading container ";
-        $container = $kernel->getContainer();
+          echo " ... ok! \n";
 
-        echo " ... ok! \n";
+          echo "[Symfony2] Loading container ";
+          $container = $kernel->getContainer();
+
+          echo " ... ok! \n";
+        }
+        else {
+          echo " ... already loaded!\n";
+        }
 
         ob_start();
         echo $content;
