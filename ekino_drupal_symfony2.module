@@ -9,8 +9,8 @@
  * file that was distributed with this source code.
  */
 
-if (PHP_SAPI === 'cli') {
-    ekino_drupal_symfony_start('drush');
+if (PHP_SAPI === 'cli' && !defined('EKINO_DRUSH_FROM')) {
+  ekino_drupal_symfony_start('drush');
 }
 
 /**
@@ -19,42 +19,42 @@ if (PHP_SAPI === 'cli') {
  */
 function ekino_drupal_symfony_start($mode)
 {
-    global $container, $conf;
+  global $container, $conf;
 
-    if (!$container && PHP_SAPI === 'cli' && $mode == 'drush') {
-        require_once sprintf('%s/%s/bootstrap.php.cache', $conf['symfony2']['root'], 'app');
-        require_once sprintf('%s/%s/AppKernel.php', $conf['symfony2']['root'], 'app');
+  if (!$container && PHP_SAPI === 'cli' && $mode == 'drush') {
+    require_once sprintf('%s/%s/bootstrap.php.cache', $conf['symfony2']['root'], 'app');
+    require_once sprintf('%s/%s/AppKernel.php', $conf['symfony2']['root'], 'app');
 
-        $content = ob_get_flush();
-        echo "[Symfony2] Booting Kernel ";
-        $kernel = new AppKernel($conf['symfony2'][$mode]['env'], $conf['symfony2'][$mode]['debug']);
-        $kernel->loadClassCache();
-        $kernel->boot();
+    echo "[Symfony2] Booting Kernel ";
 
-        echo " ... ok! \n";
+    $content = ob_get_flush();
+    $kernel = new AppKernel($conf['symfony2'][$mode]['env'], $conf['symfony2'][$mode]['debug']);
+    $kernel->loadClassCache();
+    $kernel->boot();
 
-        echo "[Symfony2] Loading container ";
-        $container = $kernel->getContainer();
+    echo " ... ok! \n";
 
-        echo " ... ok! \n";
+    echo "[Symfony2] Loading container ";
+    $container = $kernel->getContainer();
 
-        ob_start();
-        echo $content;
-    }
+    echo " ... ok! \n";
+
+    ob_start();
+    echo $content;
+  }
 }
-
 /**
  * @return \Symfony\Component\DependencyInjection\ContainerInterface
  */
 function symfony_container()
 {
-    global $container;
+  global $container;
 
-    if (!$container) {
-        throw new RuntimeException('No symfony container available');
-    }
+  if (!$container) {
+    throw new RuntimeException('No symfony container available');
+  }
 
-    return $container;
+  return $container;
 }
 
 /**
@@ -63,7 +63,7 @@ function symfony_container()
  */
 function symfony_service($name)
 {
-    return symfony_container()->get($name);
+  return symfony_container()->get($name);
 }
 
 require_once __DIR__.'/ekino_drupal_symfony2_event.inc';
