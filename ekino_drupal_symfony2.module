@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 if (PHP_SAPI === 'cli' && !defined('EKINO_DRUSH_FROM')) {
   ekino_drupal_symfony_start('drush');
 }
@@ -22,13 +21,19 @@ function ekino_drupal_symfony_start($mode)
   global $container, $conf;
 
   if (!$container && PHP_SAPI === 'cli' && $mode == 'drush') {
-    require_once sprintf('%s/%s/bootstrap.php.cache', $conf['symfony2']['root'], 'app');
-    require_once sprintf('%s/%s/AppKernel.php', $conf['symfony2']['root'], 'app');
+    if (!isset($conf['symfony2']['kernel_factory'])) {
+      require_once sprintf('%s/%s/bootstrap.php.cache', $conf['symfony2']['root'], 'app');
+      require_once sprintf('%s/%s/AppKernel.php', $conf['symfony2']['root'], 'app');
+
+      $kernelName = 'AppKernel';
+    } else {
+      $kernelName = $conf['symfony2']['kernel_factory']($conf);
+    }
 
     echo "[Symfony2] Booting Kernel ";
 
     $content = ob_get_flush();
-    $kernel = new AppKernel($conf['symfony2'][$mode]['env'], $conf['symfony2'][$mode]['debug']);
+    $kernel = new $kernelName($conf['symfony2'][$mode]['env'], $conf['symfony2'][$mode]['debug']);
     $kernel->loadClassCache();
     $kernel->boot();
 
