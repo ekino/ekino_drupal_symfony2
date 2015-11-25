@@ -8,6 +8,7 @@ Configuration
 -------------
 Edit the settings.php file and the following lines :
 
+```php
     $conf['symfony2'] = array(
         'root'  => __DIR__.'/../..', // the project root path
         'drush' => array(
@@ -15,6 +16,23 @@ Edit the settings.php file and the following lines :
             'debug' => true
         )
     );
+```
+
+In the case you have a customized Symfony structure, you can add a `kernel_factory` array key and create a custom closure
+that will return the kernal class name:
+
+```php
+
+$conf['symfony2']['kernel_factory'] = function (array $conf) {
+    $kernelName = 'PortalKernel';
+
+    require_once sprintf('%s/apps/bootstrap.php.cache', $conf['symfony2']['root']);
+    require_once sprintf('%s/apps/BaseKernel.php', $conf['symfony2']['root']);
+    require_once sprintf('%s/apps/portal/%s.php', $conf['symfony2']['root'], $kernelName);
+
+    return $kernelName;
+};
+```
 
 Hooks
 -----
