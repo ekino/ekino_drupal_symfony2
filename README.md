@@ -19,7 +19,7 @@ Edit the settings.php file and the following lines :
 ```
 
 In the case you have a customized Symfony structure, you can add a `kernel_factory` array key and create a custom closure
-that will return the kernal class name:
+that will return the kernel class name:
 
 ```php
 
@@ -37,15 +37,14 @@ $conf['symfony2']['kernel_factory'] = function (array $conf) {
 Hooks
 -----
 
-Some drupal hooks are sent to the Symfony Event Dispatcher
+Some drupal hooks are sent to the Symfony Event Dispatcher.
 
 Registration :
-    * drupal.user_login
-    * drupal.user_logout
+* drupal.user_login
+* drupal.user_logout
 
 User Entity event :
-    * drupal.user_load
-    * drupal.user_insert
-    * drupal.user_update
-    * drupal.user_presave
-
+* drupal.user_load
+* drupal.user_insert
+* drupal.user_update
+* drupal.user_presave
