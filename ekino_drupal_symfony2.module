@@ -34,7 +34,11 @@ function ekino_drupal_symfony_start($mode)
 
     $content = ob_get_flush();
     $kernel = new $kernelName($conf['symfony2'][$mode]['env'], $conf['symfony2'][$mode]['debug']);
-    $kernel->loadClassCache();
+
+    if (\PHP_VERSION_ID < 70000) {
+      $kernel->loadClassCache();
+    }
+
     $kernel->boot();
 
     echo " ... ok! \n";
